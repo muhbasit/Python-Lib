@@ -780,3 +780,125 @@ if __name__ == "__main__":
     YYY.dv(grouped_data, categories=grouped_data, grouped=True, graph_options=['pie', 'histogram'])  # Note: Scatter is not displayed for grouped data
  # _______________
  
+    @staticmethod
+    def details(methods=None):
+        """Prints details about the available visualization methods."""
+        all_methods = {
+            "histogram": "Creates a histogram representation of the data.\n"
+                         "Can be used for both grouped and ungrouped data.\n"
+                         "Parameters: data (list or dict), bins (int), grouped (bool)",
+            "box_plot": "Creates a box plot representation of the data.\n"
+                        "Displays the minimum, first quartile (Q1), median, third quartile (Q3), and maximum values.\n"
+                        "Can be used for both grouped and ungrouped data.\n"
+                        "Parameters: data (list or dict), grouped (bool)",
+            "scatter_plot": "Creates a scatter plot representation of the data.\n"
+                            "Typically used for ungrouped data with paired x and y values.\n"
+                            "Parameters: x_data (list), y_data (list), grouped (bool)",
+            "pie_chart": "Creates a pie chart representation of the data.\n"
+                         "Displays the proportion of each category.\n"
+                         "Can be used for both grouped and ungrouped data.\n"
+                         "Parameters: categories (list or dict), values (list), grouped (bool)"
+        }
+
+        if methods is None:
+            methods = all_methods.keys()
+
+        print("Selective Data Visualization Methods:")
+        for method in methods:
+            if method in all_methods:
+                print(f"{method.capitalize()}:")
+                print(all_methods[method])
+                print()
+            else:
+                print(f"Method '{method}' not found.")
+    
+    @staticmethod
+    def histogram_plot(data, bins=10, grouped=False):
+        """Creates a histogram representation of the data."""
+        if grouped:
+            frequencies = list(data.values())
+            bin_keys = list(data.keys())
+            min_value = min(bin_keys)
+            max_value = max(bin_keys)
+            bin_size = (max_value - min_value) / bins
+            histogram_freq = [0] * bins
+
+            for key in bin_keys:
+                index = int((key - min_value) / bin_size)
+                if index >= bins:
+                    index = bins - 1
+                histogram_freq[index] += data[key]
+
+            # Print histogram
+            print("Histogram (Grouped):")
+            for i in range(bins):
+                lower_bound = min_value + i * bin_size
+                upper_bound = min_value + (i + 1) * bin_size
+                print(f"{lower_bound:.2f} - {upper_bound:.2f}: {'#' * histogram_freq[i]} ({histogram_freq[i]})")
+        else:
+            min_value = min(data)
+            max_value = max(data)
+            bin_size = (max_value - min_value) / bins
+            frequencies = [0] * bins
+
+            for value in data:
+                index = int((value - min_value) / bin_size)
+                if index >= bins:
+                    index = bins - 1
+                frequencies[index] += 1
+
+            # Print histogram
+            print("Histogram (Ungrouped):")
+            for i in range(bins):
+                print(f"{min_value + i * bin_size:.2f} - {min_value + (i + 1) * bin_size:.2f}: {'#' * frequencies[i]} ({frequencies[i]})")
+
+    @staticmethod
+    def box_plot(data, grouped=False):
+        """Creates a box plot representation of the data."""
+        if grouped:
+            sorted_data = []
+            for key in sorted(data.keys()):
+                sorted_data.extend([key] * data[key])
+        else:
+            sorted_data = sorted(data)
+
+        n = len(sorted_data)
+        q1 = sorted_data[n // 4]
+        median = sorted_data[n // 2]
+        q3 = sorted_data[(3 * n) // 4]
+        min_value = min(sorted_data)
+        max_value = max(sorted_data)
+
+        # Print box plot
+        print("Box Plot:")
+        print(f"Min: {min_value}")
+        print(f"Q1: {q1}")
+        print(f"Median: {median}")
+        print(f"Q3: {q3}")
+        print(f"Max: {max_value}")
+
+    @staticmethod
+    def scatter_plot(x_data, y_data, grouped=False):
+        """Creates a scatter plot representation of the data."""
+        if grouped:
+            raise ValueError("Scatter plots are typically not suitable for grouped data.")
+        if len(x_data) != len(y_data):
+            raise ValueError("x_data and y_data must have the same length.")
+
+        print("Scatter Plot:")
+        for x, y in zip(x_data, y_data):
+            print(f"({x}, {y})")
+
+    @staticmethod
+    def pie_chart(categories, values, grouped=False):
+        """Creates a pie chart representation of the data."""
+        total = sum(values)
+        print("Pie Chart:")
+        if grouped:
+            for category, value in categories.items():
+                percentage = (value / total) * 100
+                print(f"{category}: {'#' * int(percentage // 2)} ({percentage:.1f}%)")
+        else:
+            for category, value in zip(categories, values):
+                percentage = (value / total) * 100
+                print(f"{category}: {'#' * int(percentage // 2)} ({percentage:.1f}%)")
