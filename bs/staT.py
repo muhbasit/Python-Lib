@@ -148,3 +148,94 @@ class staT:
                 }
 
         return working_tables
+
+    @staticmethod
+    def mct_formulae(grouped=False, return_all=True, return_mean=False, return_median=False, return_mode=False):
+        """
+        Returns the formulae for calculating mean, median, and mode along with detailed descriptions.
+        
+        Parameters:
+        - grouped: Boolean, if True, returns formulae for grouped data. Default is False (ungrouped data).
+        - return_all: Boolean, if True, returns formulae for mean, median, and mode. Default is True.
+        - return_mean: Boolean, if True, returns the formula for mean only.
+        - return_median: Boolean, if True, returns the formula for median only.
+        - return_mode: Boolean, if True, returns the formula for mode only.
+        
+        Returns:
+        - A dictionary containing the formulae and their descriptions for the requested measures.
+        """
+        formulae = {}
+
+        # Mean formula with description
+        if return_all or return_mean:
+            if grouped:
+                formulae['mean'] = {
+                    'formula': "Mean (Grouped) = Σ(f_i * x_i) / Σ(f_i)",
+                    'description': "The mean for grouped data is calculated as the sum of the product of each class midpoint (x_i) "
+                                   "and its corresponding frequency (f_i), divided by the total sum of frequencies (Σ(f_i)).",
+                    'parameters': {
+                        'f_i': "Frequency of the i-th class",
+                        'x_i': "Midpoint of the i-th class",
+                        'Σ(f_i)': "Total sum of frequencies"
+                    }
+                }
+            else:
+                formulae['mean'] = {
+                    'formula': "Mean (Ungrouped) = Σ(x_i) / n",
+                    'description': "The mean for ungrouped data is calculated by summing all data points (x_i) and dividing by the number of data points (n).",
+                    'parameters': {
+                        'x_i': "The i-th data point",
+                        'n': "Total number of data points"
+                    }
+                }
+
+        # Median formula with description
+        if return_all or return_median:
+            if grouped:
+                formulae['median'] = {
+                    'formula': "Median (Grouped) = L + [(N/2 - CF) / f_m] * c",
+                    'description': "The median for grouped data is calculated using the lower class boundary (L) of the median class, the cumulative frequency (CF) before the median class, "
+                                   "the total frequency (N), the frequency of the median class (f_m), and the class width (c).",
+                    'parameters': {
+                        'L': "Lower boundary of the median class",
+                        'N': "Total frequency (Σ(f_i))",
+                        'CF': "Cumulative frequency before the median class",
+                        'f_m': "Frequency of the median class",
+                        'c': "Class width"
+                    }
+                }
+            else:
+                formulae['median'] = {
+                    'formula': "Median (Ungrouped) = Middle value or (x_{n/2} + x_{(n/2 + 1)}) / 2",
+                    'description': "For ungrouped data, if the dataset size is odd, the median is the middle value. If the size is even, the median is the average of the two middle values.",
+                    'parameters': {
+                        'n': "Total number of data points",
+                        'x_{n/2}': "Middle value(s) when sorted"
+                    }
+                }
+
+        # Mode formula with description
+        if return_all or return_mode:
+            if grouped:
+                formulae['mode'] = {
+                    'formula': "Mode (Grouped) = L + [(f_m - f_1) / (2f_m - f_1 - f_2)] * c",
+                    'description': "The mode for grouped data is calculated using the frequency of the modal class (f_m), the frequencies of the classes before (f_1) and after (f_2) the modal class, "
+                                   "the lower boundary of the modal class (L), and the class width (c).",
+                    'parameters': {
+                        'L': "Lower boundary of the modal class",
+                        'f_m': "Frequency of the modal class",
+                        'f_1': "Frequency of the class before the modal class",
+                        'f_2': "Frequency of the class after the modal class",
+                        'c': "Class width"
+                    }
+                }
+            else:
+                formulae['mode'] = {
+                    'formula': "Mode (Ungrouped) = Most frequent value(s)",
+                    'description': "The mode for ungrouped data is the value that appears most frequently in the dataset.",
+                    'parameters': {
+                        'Most frequent value': "Value(s) that occur most often in the dataset"
+                    }
+                }
+
+        return formulae
