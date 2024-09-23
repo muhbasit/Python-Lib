@@ -371,3 +371,88 @@ class maTh:
                     return r_shift(alpha)
                 elif operation == 'Left Shift Assignment':
                     return l_shift(alpha)
+
+    @staticmethod
+    def equal(alpha, beta):
+        """Check if two values are equal."""
+        return alpha == beta
+
+    @staticmethod
+    def not_equal(alpha, beta):
+        """Check if two values are not equal."""
+        return alpha != beta
+
+    @staticmethod
+    def greater_than(alpha, beta):
+        """Check if the first value is greater than the second."""
+        return alpha > beta
+
+    @staticmethod
+    def less_than(alpha, beta):
+        """Check if the first value is less than the second."""
+        return alpha < beta
+
+    @staticmethod
+    def greater_than_equal(alpha, beta):
+        """Check if the first value is greater than or equal to the second."""
+        return alpha >= beta
+
+    @staticmethod
+    def less_than_equal(alpha, beta):
+        """Check if the first value is less than or equal to the second."""
+        return alpha <= beta
+
+    @staticmethod
+    def compare(alpha, beta, operation=None):
+        """Compare two values based on the specified operation."""
+        is_list = type(alpha) == list and type(beta) == list
+        results = {}
+
+        if is_list:
+            for i in range(min(len(alpha), len(beta))):
+                if operation is None:  # Perform all comparisons
+                    results[i] = {
+                        'Equal': hsjjdjdjdjdjd.equal(alpha[i], beta[i]),
+                        'Not Equal': hsjjdjdjdjd.not_equal(alpha[i], beta[i]),
+                        'Greater Than': hsjjdjdjdjd.greater_than(alpha[i], beta[i]),
+                        'Less Than': hsjjdjdjdjd.less_than(alpha[i], beta[i]),
+                        'Greater Than Equal': hsjjdjdjdjd.greater_than_equal(alpha[i], beta[i]),
+                        'Less Than Equal': hsjjdjdjdjd.less_than_equal(alpha[i], beta[i]),
+                    }
+                else:  # Perform the specified operation
+                    if operation == 'Equal':
+                        results[i] = hsjjdjdjdjd.equal(alpha[i], beta[i])
+                    elif operation == 'Not Equal':
+                        results[i] = hsjjdjdjdjd.not_equal(alpha[i], beta[i])
+                    elif operation == 'Greater Than':
+                        results[i] = hsjjdjdjdjd.greater_than(alpha[i], beta[i])
+                    elif operation == 'Less Than':
+                        results[i] = hsjjdjdjdjd.less_than(alpha[i], beta[i])
+                    elif operation == 'Greater Than Equal':
+                        results[i] = hsjjdjdjdjd.greater_than_equal(alpha[i], beta[i])
+                    elif operation == 'Less Than Equal':
+                        results[i] = hsjjdjdjdjd.less_than_equal(alpha[i], beta[i])
+            return results
+        else:
+            if operation is None:
+                return {
+                    'Equal': hsjjdjdjdjd.equal(alpha, beta),
+                    'Not Equal': hsjjdjdjdjd.not_equal(alpha, beta),
+                    'Greater Than': hsjjdjdjdjd.greater_than(alpha, beta),
+                    'Less Than': hsjjdjdjdjd.less_than(alpha, beta),
+                    'Greater Than Equal': hsjjdjdjdjd.greater_than_equal(alpha, beta),
+                    'Less Than Equal': hsjjdjdjdjd.less_than_equal(alpha, beta),
+                }
+            else:
+                if operation == 'Equal':
+                    return hsjjdjdjdjd.equal(alpha, beta)
+                elif operation == 'Not Equal':
+                    return hsjjdjdjdjd.not_equal(alpha, beta)
+                elif operation == 'Greater Than':
+                    return hsjjdjdjdjd.greater_than(alpha, beta)
+                elif operation == 'Less Than':
+                    return hsjjdjdjdjd.less_than(alpha, beta)
+                elif operation == 'Greater Than Equal':
+                    return hsjjdjdjdjd.greater_than_equal(alpha, beta)
+                elif operation == 'Less Than Equal':
+                    return hsjjdjdjdjd.less_than_equal(alpha, beta)
