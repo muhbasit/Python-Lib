@@ -506,3 +506,112 @@ class staT:
             frequency_table = [{"Value": key, "Frequency": freq} for key, freq in frequency_table.items()]
 
         return frequency_table
+
+    @staticmethod
+    def mod_formulae(grouped=False, return_all=True, return_variance=False, return_std_dev=False, return_iqr=False):
+        """
+        Returns the formulae for calculating mode, variance, standard deviation, and interquartile range (IQR)
+        along with detailed descriptions.
+
+        Parameters:
+        - grouped: Boolean, if True, returns formulae for grouped data. Default is False (ungrouped data).
+        - return_all: Boolean, if True, returns formulae for all measures. Default is True.
+        - return_variance: Boolean, if True, returns the formula for variance only.
+        - return_std_dev: Boolean, if True, returns the formula for standard deviation only.
+        - return_iqr: Boolean, if True, returns the formula for interquartile range only.
+
+        Returns:
+        - A dictionary containing the formulae and their descriptions for the requested measures.
+        """
+        formulae = {}
+
+        # Mode formula with description
+        if return_all or (not grouped and not return_variance and not return_std_dev and not return_iqr):
+            formulae['mode'] = {
+                'formula': "Mode (Ungrouped) = value with the highest frequency",
+                'description': "The mode is the value that appears most frequently in a dataset.",
+                'parameters': {
+                    'value': "The data point that appears most often."
+                }
+            }
+
+        if return_all or (grouped and not return_variance and not return_std_dev and not return_iqr):
+            formulae['mode_grouped'] = {
+                'formula': "Mode (Grouped) = x_i where f_i is maximum",
+                'description': "The mode for grouped data is the class interval with the highest frequency.",
+                'parameters': {
+                    'x_i': "Midpoint of the modal class.",
+                    'f_i': "Frequency of the modal class."
+                }
+            }
+
+        # Variance formula with description
+        if return_all or return_variance:
+            if grouped:
+                formulae['variance_grouped'] = {
+                    'formula': "Variance (Grouped) = Σ(f_i * (x_i - mean)^2) / Σf_i",
+                    'description': "Variance for grouped data is calculated using the frequencies and midpoints.",
+                    'parameters': {
+                        'f_i': "Frequency of the i-th class.",
+                        'x_i': "Midpoint of the i-th class.",
+                        'mean': "Mean of the data.",
+                        'Σf_i': "Total sum of frequencies."
+                    }
+                }
+            else:
+                formulae['variance'] = {
+                    'formula': "Variance (Ungrouped) = Σ(x_i - mean)^2 / N",
+                    'description': "Variance for ungrouped data is calculated using the individual data points.",
+                    'parameters': {
+                        'x_i': "Individual data point.",
+                        'mean': "Mean of the data.",
+                        'N': "Total number of observations."
+                    }
+                }
+
+        # Standard deviation formula with description
+        if return_all or return_std_dev:
+            if grouped:
+                formulae['std_dev_grouped'] = {
+                    'formula': "Standard Deviation (Grouped) = √(Variance (Grouped))",
+                    'description': "Standard deviation is the square root of variance for grouped data.",
+                    'parameters': {}
+                }
+            else:
+                formulae['std_dev'] = {
+                    'formula': "Standard Deviation (Ungrouped) = √(Variance (Ungrouped))",
+                    'description': "Standard deviation is the square root of variance for ungrouped data.",
+                    'parameters': {}
+                }
+
+        # Interquartile Range formula with description
+        if return_all or return_iqr:
+            if grouped:
+                formulae['iqr_grouped'] = {
+                    'formula': "IQR (Grouped) = Q3 - Q1",
+                    'description': "The interquartile range is the difference between the third (Q3) and first (Q1) quartiles.",
+                    'parameters': {
+                        'Q1': "First quartile (25th percentile).",
+                        'Q3': "Third quartile (75th percentile)."
+                    }
+                }
+            else:
+                formulae['iqr'] = {
+                    'formula': "IQR (Ungrouped) = Q3 - Q1",
+                    'description': "The interquartile range is the difference between the third (Q3) and first (Q1) quartiles.",
+                    'parameters': {
+                        'Q1': "First quartile (25th percentile).",
+                        'Q3': "Third quartile (75th percentile)."
+                    }
+                }
+
+        return formulae
+if __name__ == "__main__":
+    formulae = Hgdgdhdhsb.mod_formulae(grouped=True, return_all=True)
+    for measure, details in formulae.items():
+        print(f"{measure.capitalize()}:\nFormula: {details['formula']}\nDescription: {details['description']}\n")
+        if details['parameters']:
+            print("Parameters:")
+            for param, desc in details['parameters'].items():
+                print(f" - {param}: {desc}")
+        print("\n")
