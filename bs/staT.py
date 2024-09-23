@@ -397,3 +397,88 @@ class staT:
                 file.write(rf"{formula} \\[2mm]\n")
             file.write(r"\end{document}")
         print(f"LaTeX file saved as {filename}")
+
+    def __init__(self, data, grouped=False):
+        """
+        Initializes the MainRange class with the provided data.
+
+        Parameters:
+        - data: A list of numerical values or a dictionary for grouped data.
+        - grouped: Boolean, if True, treats the data as grouped.
+        """
+        self.data = data
+        self.grouped = grouped
+
+    @staticmethod
+    def range(data, grouped=False):
+        """Calculates the range of the data."""
+        if grouped:
+            return max(data.keys()) - min(data.keys())
+        else:
+            return max(data) - min(data)
+
+    @staticmethod
+    def variance(data, grouped=False):
+        """Calculates the variance of the data."""
+        if grouped:
+            total_frequency = sum(data.values())
+            mean = sum(key * freq for key, freq in data.items()) / total_frequency
+            return sum(freq * ((key - mean) ** 2) for key, freq in data.items()) / total_frequency
+        else:
+            mean = sum(data) / len(data)
+            return sum((x - mean) ** 2 for x in data) / len(data)
+
+    @staticmethod
+    def std_dev(data, grouped=False):
+        """Calculates the standard deviation of the data."""
+        variance = MainRange.variance(data, grouped)
+        return variance ** 0.5
+
+    @staticmethod
+    def iqr_range(data, grouped=False):
+        """Calculates the interquartile range (IQR) of the data."""
+        if grouped:
+            sorted_data = []
+            for key, freq in sorted(data.items()):
+                sorted_data.extend([key] * freq)
+        else:
+            sorted_data = sorted(data)
+
+        n = len(sorted_data)
+
+        # Calculate Q1 (25th percentile)
+        q1_index = (n + 1) // 4
+        q1 = sorted_data[q1_index - 1]
+
+        # Calculate Q3 (75th percentile)
+        q3_index = (3 * (n + 1)) // 4
+        q3 = sorted_data[q3_index - 1]
+
+        return q3 - q1
+
+    @staticmethod
+    def mod(data, grouped=False):
+        """
+        Calculates the mode of the data.
+
+        Returns:
+        - A list of mode values. If no mode exists, returns an empty list.
+        """
+        if grouped:
+            sorted_data = []
+            for key, freq in sorted(data.items()):
+                sorted_data.extend([key] * freq)
+        else:
+            sorted_data = data
+
+        frequency = {}
+        for value in sorted_data:
+            if value in frequency:
+                frequency[value] += 1
+            else:
+                frequency[value] = 1
+
+        max_freq = max(frequency.values())
+        modes = [value for value, freq in frequency.items() if freq == max_freq]
+
+        return modes if max_freq > 1 else []
