@@ -456,3 +456,94 @@ class maTh:
                     return hsjjdjdjdjd.greater_than_equal(alpha, beta)
                 elif operation == 'Less Than Equal':
                     return hsjjdjdjdjd.less_than_equal(alpha, beta)
+
+    @staticmethod
+    def logical_and(alpha, beta):
+        """Perform logical AND operation."""
+        return alpha and beta
+
+    @staticmethod
+    def logical_or(alpha, beta):
+        """Perform logical OR operation."""
+        return alpha or beta
+
+    @staticmethod
+    def logical_not(alpha):
+        """Perform logical NOT operation."""
+        return not alpha
+
+    @staticmethod
+    def logical_nand(alpha, beta):
+        """Perform logical NAND operation."""
+        return not (alpha and beta)
+
+    @staticmethod
+    def logical_nor(alpha, beta):
+        """Perform logical NOR operation."""
+        return not (alpha or beta)
+
+    @staticmethod
+    def logical_xor(alpha, beta):
+        """Perform logical XOR operation."""
+        return (alpha and not beta) or (not alpha and beta)
+
+    @staticmethod
+    def compute(alpha, beta, operation=None):
+        """Compute logical operations based on the specified operation."""
+        is_list = type(alpha) == list and type(beta) == list
+        results = {}
+
+        if is_list:
+            for i in range(min(len(alpha), len(beta))):
+                if operation is None:  # Perform all operations
+                    results[i] = {
+                        'Logical AND': Logic.logical_and(alpha[i], beta[i]),
+                        'Logical OR': Logic.logical_or(alpha[i], beta[i]),
+                        'Logical NOT Alpha': Logic.logical_not(alpha[i]),
+                        'Logical NOT Beta': Logic.logical_not(beta[i]),
+                        'Logical NAND': Logic.logical_nand(alpha[i], beta[i]),
+                        'Logical NOR': Logic.logical_nor(alpha[i], beta[i]),
+                        'Logical XOR': Logic.logical_xor(alpha[i], beta[i]),
+                    }
+                else:  # Perform the specified operation
+                    if operation == 'Logical AND':
+                        results[i] = Logic.logical_and(alpha[i], beta[i])
+                    elif operation == 'Logical OR':
+                        results[i] = Logic.logical_or(alpha[i], beta[i])
+                    elif operation == 'Logical NOT Alpha':
+                        results[i] = Logic.logical_not(alpha[i])
+                    elif operation == 'Logical NOT Beta':
+                        results[i] = Logic.logical_not(beta[i])
+                    elif operation == 'Logical NAND':
+                        results[i] = Logic.logical_nand(alpha[i], beta[i])
+                    elif operation == 'Logical NOR':
+                        results[i] = Logic.logical_nor(alpha[i], beta[i])
+                    elif operation == 'Logical XOR':
+                        results[i] = Logic.logical_xor(alpha[i], beta[i])
+            return results
+        else:
+            if operation is None:
+                return {
+                    'Logical AND': Logic.logical_and(alpha, beta),
+                    'Logical OR': Logic.logical_or(alpha, beta),
+                    'Logical NOT Alpha': Logic.logical_not(alpha),
+                    'Logical NOT Beta': Logic.logical_not(beta),
+                    'Logical NAND': Logic.logical_nand(alpha, beta),
+                    'Logical NOR': Logic.logical_nor(alpha, beta),
+                    'Logical XOR': Logic.logical_xor(alpha, beta),
+                }
+            else:
+                if operation == 'Logical AND':
+                    return Logic.logical_and(alpha, beta)
+                elif operation == 'Logical OR':
+                    return Logic.logical_or(alpha, beta)
+                elif operation == 'Logical NOT Alpha':
+                    return Logic.logical_not(alpha)
+                elif operation == 'Logical NOT Beta':
+                    return Logic.logical_not(beta)
+                elif operation == 'Logical NAND':
+                    return Logic.logical_nand(alpha, beta)
+                elif operation == 'Logical NOR':
+                    return Logic.logical_nor(alpha, beta)
+                elif operation == 'Logical XOR':
+                    return Logic.logical_xor(alpha, beta)
