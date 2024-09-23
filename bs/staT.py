@@ -1,4 +1,9 @@
 # staT.py
+from docx import Document
+from pptx import Presentation
+from pptx.util import Inches
+from openpyxl import Workbook
+from fpdf import FPDF
 
 class staT:
     """A class to perform basic statistical operations on both raw and grouped data, with working tables."""
@@ -239,3 +244,156 @@ class staT:
                 }
 
         return formulae
+
+    @staticmethod
+    def mct_latex(grouped=False, return_all=True, return_mean=False, return_median=False, return_mode=False):
+        """
+        Returns LaTeX versions of the formulas for calculating mean, median, and mode.
+        
+        Parameters:
+        - grouped: Boolean, if True, returns LaTeX formulas for grouped data. Default is False (ungrouped data).
+        - return_all: Boolean, if True, returns LaTeX formulas for mean, median, and mode. Default is True.
+        - return_mean: Boolean, if True, returns the LaTeX formula for mean only.
+        - return_median: Boolean, if True, returns the LaTeX formula for median only.
+        - return_mode: Boolean, if True, returns the LaTeX formula for mode only.
+        
+        Returns:
+        - A dictionary containing the LaTeX versions of the requested formulas.
+        """
+        latex_formulas = {}
+
+        # Mean LaTeX formula
+        if return_all or return_mean:
+            if grouped:
+                latex_formulas['mean'] = r"\bar{x} = \frac{\sum (f_i \cdot x_i)}{\sum f_i}"
+            else:
+                latex_formulas['mean'] = r"\bar{x} = \frac{\sum x_i}{n}"
+
+        # Median LaTeX formula
+        if return_all or return_median:
+            if grouped:
+                latex_formulas['median'] = r"Median = L + \left( \frac{\frac{N}{2} - CF}{f_m} \right) \cdot c"
+            else:
+                latex_formulas['median'] = r"Median = \text{Middle value or} \frac{x_{\frac{n}{2}} + x_{\frac{n}{2}+1}}{2}"
+
+        # Mode LaTeX formula
+        if return_all or return_mode:
+            if grouped:
+                latex_formulas['mode'] = r"Mode = L + \left( \frac{f_m - f_1}{2f_m - f_1 - f_2} \right) \cdot c"
+            else:
+                latex_formulas['mode'] = r"Mode = \text{Most frequent value(s)}"
+
+        return latex_formulas
+
+    def __init__(self):
+        self.formulas = {
+            'mean': "Mean (Ungrouped) = Σ(x_i) / n",
+            'median': "Median (Ungrouped) = Middle value or (x_{n/2} + x_{(n/2 + 1)}) / 2",
+            'mode': "Mode (Ungrouped) = Most frequent value(s)"
+        }
+
+    def mct_word(self, filename="mct_data.docx"):
+        """Converts statistical formulas into a Word document."""
+        doc = Document()
+        doc.add_heading('Measures of Central Tendency', 0)
+
+        for name, formula in self.formulas.items():
+            doc.add_heading(name.capitalize(), level=1)
+            doc.add_paragraph(formula)
+
+        doc.save(filename)
+        print(f"Word document saved as {filename}")
+
+    def mct_ppt(self, filename="mct_data.pptx"):
+        """Creates a PowerPoint presentation with statistical formulas and animations."""
+        ppt = Presentation()
+        slide_layout = ppt.slide_layouts[1]
+
+        slide = ppt.slides.add_slide(slide_layout)
+        title = slide.shapes.title
+        content = slide.shapes.placeholders[1]
+
+        title.text = "Measures of Central Tendency"
+        content.text = "\n".join([f"{name.capitalize()}: {formula}" for name, formula in self.formulas.items()])
+
+        ppt.save(filename)
+        print(f"PowerPoint presentation saved as {filename}")
+
+    def mct_exl(self, filename="mct_data.xlsx"):
+        """Creates an Excel sheet with statistical formulas for tabular calculations."""
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "MCT Data"
+
+        # Add headers
+        ws.append(["Measure", "Formula"])
+
+        # Add data
+        for name, formula in self.formulas.items():
+            ws.append([name.capitalize(), formula])
+
+        wb.save(filename)
+        print(f"Excel file saved as {filename}")
+
+    def mct_pdf(self, filename="mct_data.pdf"):
+        """Generates a PDF document with statistical formulas, including mathematical equation form."""
+        pdf = FPDF()
+        pdf.add_page()
+
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(200, 10, "Measures of Central Tendency", ln=True, align="C")
+
+        pdf.set_font("Arial", size=12)
+        for name, formula in self.formulas.items():
+            pdf.ln(10)
+            pdf.cell(200, 10, f"{name.capitalize()}: {formula}", ln=True)
+
+        pdf.output(filename)
+        print(f"PDF saved as {filename}")
+
+    def __init__(self):
+        self.formulas = {
+            'mean': "Mean (Ungrouped) = Σ(x_i) / n",
+            'median': "Median (Ungrouped) = Middle value or (x_{n/2} + x_{(n/2 + 1)}) / 2",
+            'mode': "Mode (Ungrouped) = Most frequent value(s)"
+        }
+
+    def mct_text(self, filename="mct_data.txt"):
+        """Creates a plain text file with statistical formulas."""
+        with open(filename, 'w') as file:
+            file.write("Measures of Central Tendency\n")
+            file.write("="*30 + "\n")
+            for name, formula in self.formulas.items():
+                file.write(f"{name.capitalize()}:\n")
+                file.write(f"{formula}\n\n")
+        print(f"Text file saved as {filename}")
+
+    def mct_csv(self, filename="mct_data.csv"):
+        """Creates a CSV file with statistical formulas."""
+        with open(filename, 'w') as file:
+            file.write("Measure,Formula\n")
+            for name, formula in self.formulas.items():
+                file.write(f"{name.capitalize()},{formula}\n")
+        print(f"CSV file saved as {filename}")
+
+    def mct_html(self, filename="mct_data.html"):
+        """Creates an HTML file with statistical formulas."""
+        with open(filename, 'w') as file:
+            file.write("<html><head><title>MCT Data</title></head><body>\n")
+            file.write("<h1>Measures of Central Tendency</h1>\n")
+            for name, formula in self.formulas.items():
+                file.write(f"<h2>{name.capitalize()}</h2>\n")
+                file.write(f"<p>{formula}</p>\n")
+            file.write("</body></html>\n")
+        print(f"HTML file saved as {filename}")
+
+    def mct_latx(self, filename="mct_data.tex"):
+        """Creates a LaTeX file with statistical formulas."""
+        with open(filename, 'w') as file:
+            file.write(r"\documentclass{article}\begin{document}\n")
+            file.write(r"\section*{Measures of Central Tendency}\n")
+            for name, formula in self.formulas.items():
+                file.write(rf"\subsection*{{{name.capitalize()}}}\n")
+                file.write(rf"{formula} \\[2mm]\n")
+            file.write(r"\end{document}")
+        print(f"LaTeX file saved as {filename}")
