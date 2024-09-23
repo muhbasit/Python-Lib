@@ -902,3 +902,70 @@ if __name__ == "__main__":
             for category, value in zip(categories, values):
                 percentage = (value / total) * 100
                 print(f"{category}: {'#' * int(percentage // 2)} ({percentage:.1f}%)")
+
+    @staticmethod
+    def calculate_statistics(data):
+        """Calculates various statistical measures."""
+        mean = staT.mean(data)
+        median = staT.median(data)
+        mode = staT.mode(data).mode[0]
+        range_value = staT.max(data) - staT.min(data)
+        q1 = staT.inq_range(data, 25)
+        q3 = staT.inq_range(data, 75)
+        iqr = q3 - q1
+        variance = staT.variance(data, ddof=1)  # Sample variance
+        std_dev = staT.std_dev(data, ddof=1)   # Sample standard deviation
+        
+        return {
+            "Mean": mean,
+            "Median": median,
+            "Mode": mode,
+            "Range": range_value,
+            "Interquartile Range (IQR)": iqr,
+            "Variance": variance,
+            "Standard Deviation": std_dev
+        }
+
+    @staticmethod
+    def gen_report(data):
+        """Generates a comprehensive report of statistical measures and visualizations."""
+        stats = staT.calculate_statistics(data)
+        
+        print("Statistical Report:")
+        for measure, value in stats.items():
+            print(f"{measure}: {value}")
+
+        # Generate Visualizations
+        print("\nGenerating Visualizations...\n")
+        staT.histogram_plot(data)
+        staT.bar_chart(['Mean', 'Median', 'Mode'], [stats['Mean'], stats['Median'], stats['Mode']])
+        staT.pie_chart(['Mean', 'Median', 'Mode'], [stats['Mean'], stats['Median'], stats['Mode']])
+        staT.box_plot(data)
+
+    @staticmethod
+    def max(data, grouped=False):
+        """Calculates the maximum value from the data."""
+        if grouped:
+            # For grouped data, assume data is a dictionary
+            max_value = max(data.keys())
+            print(f"Maximum value (Grouped): {max_value}")
+            return max_value
+        else:
+            # For ungrouped data
+            max_value = max(data)
+            print(f"Maximum value (Ungrouped): {max_value}")
+            return max_value
+
+    @staticmethod
+    def min(data, grouped=False):
+        """Calculates the minimum value from the data."""
+        if grouped:
+            # For grouped data, assume data is a dictionary
+            min_value = min(data.keys())
+            print(f"Minimum value (Grouped): {min_value}")
+            return min_value
+        else:
+            # For ungrouped data
+            min_value = min(data)
+            print(f"Minimum value (Ungrouped): {min_value}")
+            return min_value
