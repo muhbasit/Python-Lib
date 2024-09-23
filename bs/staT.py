@@ -4,6 +4,7 @@ from pptx import Presentation
 from pptx.util import Inches
 from openpyxl import Workbook
 from fpdf import FPDF
+import matplotlib.pyplot as plt 
 
 class staT:
     """A class to perform basic statistical operations on both raw and grouped data, with working tables."""
@@ -615,3 +616,165 @@ if __name__ == "__main__":
             for param, desc in details['parameters'].items():
                 print(f" - {param}: {desc}")
         print("\n")
+
+    @staticmethod
+    def histogram(data, bins=10, grouped=False, ax=None):
+        """Creates a histogram representation of the data."""
+        if grouped:
+            frequencies = list(data.values())
+            bin_keys = list(data.keys())
+            min_value = min(bin_keys)
+            max_value = max(bin_keys)
+            bin_size = (max_value - min_value) / bins
+            histogram_freq = [0] * bins
+
+            for key in bin_keys:
+                index = int((key - min_value) / bin_size)
+                if index >= bins:
+                    index = bins - 1
+                histogram_freq[index] += data[key]
+
+            ax.bar([min_value + i * bin_size for i in range(bins)],
+                    histogram_freq,
+                    width=bin_size,
+                    edgecolor='black')
+            ax.set_title('Histogram (Grouped)')
+            ax.set_xlabel('Bins')
+            ax.set_ylabel('Frequency')
+        else:
+            ax.hist(data, bins=bins, edgecolor='black')
+            ax.set_title('Histogram (Ungrouped)')
+            ax.set_xlabel('Value')
+            ax.set_ylabel('Frequency')
+
+    @staticmethod
+    def box(data, grouped=False, ax=None):
+        """Creates a box representation of the data."""
+        if grouped:
+            sorted_data = []
+            for key in sorted(data.keys()):
+                sorted_data.extend([key] * data[key])
+        else:
+            sorted_data = sorted(data)
+
+        ax.boxplot(sorted_data)
+        ax.set_title('Box')
+        ax.set_ylabel('Values')
+
+    @staticmethod
+    def scatter(x_data, y_data, grouped=False, ax=None):
+        """Creates a scatter representation of the data."""
+        if grouped:
+            raise ValueError("Scatter plots are typically not suitable for grouped data.")
+        if len(x_data) != len(y_data):
+            raise ValueError("x_data and y_data must have the same length.")
+
+        ax.scatter(x_data, y_data)
+        ax.set_title('Scatter')
+        ax.set_xlabel('X Data')
+        ax.set_ylabel('Y Data')
+
+    @staticmethod
+    def pie(categories, values, grouped=False, ax=None):
+        """Creates a pie representation of the data."""
+        if grouped:
+            ax.pie(categories.values(), labels=categories.keys(), autopct='%1.1f%%')
+            ax.set_title('Pie (Grouped)')
+        else:
+            ax.pie(values, labels=categories, autopct='%1.1f%%')
+            ax.set_title('Pie (Ungrouped)')
+
+    @staticmethod
+    def dv(data, x_data=None, y_data=None, categories=None, values=None, grouped=False, graph_options=None):
+        """Displays selected graphs in one window based on user options."""
+        fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+        axs = axs.flatten()  # Flatten the 2D array of axes for easy indexing
+        
+        # Default graph options if none are provided
+        if graph_options is None:
+            graph_options = ['histogram', 'box', 'scatter', 'pie']
+        
+        # Track which graphs to display
+        graphs_displayed = 0
+
+        if 'histogram' in graph_options:
+            YYY.display_histogram(data, axs[graphs_displayed], grouped)
+            graphs_displayed += 1
+
+        if 'box' in graph_options:
+            YYY.display_box(data, axs[graphs_displayed], grouped)
+            graphs_displayed += 1
+
+        if 'scatter' in graph_options:
+            if x_data is not None and y_data is not None:
+                YYY.display_scatter(x_data, y_data, axs[graphs_displayed], grouped)
+                graphs_displayed += 1
+
+        if 'pie' in graph_options:
+            if categories is not None and values is not None:
+                YYY.display_pie(categories, values, axs[graphs_displayed], grouped)
+                graphs_displayed += 1
+
+        # Remove unused axes
+        for i in range(graphs_displayed, len(axs)):
+            fig.delaxes(axs[i])
+
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def display_histogram(data, ax, grouped):
+        """Helper function to display histogram."""
+        DV.histogram(data, ax=ax, grouped=grouped)
+
+    @staticmethod
+    def display_box(data, ax, grouped):
+        """Helper function to display box."""
+        DV.box(data, ax=ax, grouped=grouped)
+
+    @staticmethod
+    def display_scatter(x_data, y_data, ax, grouped):
+        """Helper function to display scatter."""
+        if grouped:
+            raise ValueError("Scatter representations are typically not suitable for grouped data.")
+        DV.scatter(x_data, y_data, ax=ax, grouped=grouped)
+
+    @staticmethod
+    def display_pie(categories, values, ax, grouped):
+        """Helper function to display pie."""
+        DV.pie(categories, values, ax=ax, grouped=grouped)
+
+# ___________________
+# Usage example
+if __name__ == "__main__":
+    # Sample ungrouped data
+    ungrouped_data = [1, 2, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 8, 9]
+    
+    # Sample grouped data
+    grouped_data = {
+        1: 2,
+        2: 3,
+        3: 4,
+        4: 1,
+        5: 3,
+        6: 1,
+        7: 1,
+        8: 1,
+        9: 1,
+    }
+    
+    categories = ['A', 'B', 'C', 'D']
+    values = [10, 15, 7, 8]
+
+    # Display selected graphs for ungrouped data
+    print("Displaying Histogram and Box for Ungrouped Data:")
+    YYY.dv(ungrouped_data, x_data=ungrouped_data, y_data=[x * 2 for x in ungrouped_data],
+            categories=categories, values=values, grouped=False, graph_options=['histogram', 'box'])
+
+    print("\n--- Grouped Data Visualizations ---\n")
+    
+    # Display all graphs for grouped data
+    print("Displaying Pie and Histogram for Grouped Data:")
+    YYY.dv(grouped_data, categories=grouped_data, grouped=True, graph_options=['pie', 'histogram'])  # Note: Scatter is not displayed for grouped data
+ # _______________
+ 
