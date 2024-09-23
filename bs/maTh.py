@@ -131,4 +131,60 @@ class maTh:
         elif not is_alpha_list and not is_beta_list:
             return alpha ** beta
         else:
-            return "Both inputs must be numbers or lists of the same length"
+            return "Both inputs must be numbers or lists of the same length" 
+
+    @staticmethod
+    def square(value):
+        """Calculate the square of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x ** 2 for x in value]
+        return value ** 2
+
+    @staticmethod
+    def sq_root(value):
+        """Calculate the square root of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x ** 0.5 for x in value if x >= 0]
+        return value ** 0.5 if value >= 0 else "Cannot compute square root of a negative number"
+
+    @staticmethod
+    def nth_root(value, n):
+        """Calculate the nth root of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x ** (1/n) for x in value]
+        return value ** (1/n)
+
+    @staticmethod
+    def log(value, base):
+        """Calculate logarithm using change of base formula."""
+        if value <= 0:
+            return float('-inf')  # Logarithm of non-positive number is undefined
+        if base <= 0 or base == 1:
+            return "Invalid base for logarithm"
+        result = 0
+        while value >= base:
+            value /= base
+            result += 1
+        while value < 1:
+            value *= base
+            result -= 1
+        return result
+
+    @staticmethod
+    def log2(value):
+        """Calculate the base-2 logarithm of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [maTh.log(x, 2) for x in value if x > 0]
+        return maTh.log(value, 2) if value > 0 else "Cannot compute logarithm base 2 of non-positive number"
+
+    @staticmethod
+    def ln(value):
+        """Calculate the natural logarithm of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [maTh.log(x, 2.718281828459045) for x in value if x > 0]
+        return maTh.log(value, 2.718281828459045) if value > 0 else "Cannot compute natural logarithm of non-positive number"
