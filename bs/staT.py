@@ -482,3 +482,27 @@ class staT:
         modes = [value for value, freq in frequency.items() if freq == max_freq]
 
         return modes if max_freq > 1 else []
+
+    @staticmethod
+    def mod_wr(data, grouped=False):
+        """
+        Returns the working table for calculating the mode of the data.
+
+        Returns:
+        - A list of dictionaries representing the frequency table for ungrouped data 
+          or a detailed frequency distribution for grouped data.
+        """
+        if grouped:
+            frequency_table = [{"Value": key, "Frequency": freq} for key, freq in sorted(data.items())]
+        else:
+            frequency_table = {}
+            for value in data:
+                if value in frequency_table:
+                    frequency_table[value] += 1
+                else:
+                    frequency_table[value] = 1
+            
+            # Convert frequency table to list of dictionaries
+            frequency_table = [{"Value": key, "Frequency": freq} for key, freq in frequency_table.items()]
+
+        return frequency_table
