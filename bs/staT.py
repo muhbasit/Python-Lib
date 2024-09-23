@@ -607,6 +607,7 @@ class staT:
                 }
 
         return formulae
+#. Examples 
 if __name__ == "__main__":
     formulae = Hgdgdhdhsb.mod_formulae(grouped=True, return_all=True)
     for measure, details in formulae.items():
@@ -616,6 +617,7 @@ if __name__ == "__main__":
             for param, desc in details['parameters'].items():
                 print(f" - {param}: {desc}")
         print("\n")
+#. End examples
 
     @staticmethod
     def histogram(data, bins=10, grouped=False, ax=None):
@@ -659,7 +661,7 @@ if __name__ == "__main__":
 
         ax.boxplot(sorted_data)
         ax.set_title('Box')
-        ax.set_ylabel('Values')
+        ax.set_ylabel('Values') 
 
     @staticmethod
     def scatter(x_data, y_data, grouped=False, ax=None):
@@ -725,7 +727,7 @@ if __name__ == "__main__":
     @staticmethod
     def display_histogram(data, ax, grouped):
         """Helper function to display histogram."""
-        DV.histogram(data, ax=ax, grouped=grouped)
+        staT.histogram(data, ax=ax, grouped=grouped)
 
     @staticmethod
     def display_box(data, ax, grouped):
@@ -737,12 +739,12 @@ if __name__ == "__main__":
         """Helper function to display scatter."""
         if grouped:
             raise ValueError("Scatter representations are typically not suitable for grouped data.")
-        DV.scatter(x_data, y_data, ax=ax, grouped=grouped)
+        staT.scatter(x_data, y_data, ax=ax, grouped=grouped)
 
     @staticmethod
     def display_pie(categories, values, ax, grouped):
         """Helper function to display pie."""
-        DV.pie(categories, values, ax=ax, grouped=grouped)
+        staT.pie(categories, values, ax=ax, grouped=grouped)
 
 # ___________________
 # Usage example
