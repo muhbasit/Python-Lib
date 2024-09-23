@@ -188,3 +188,27 @@ class maTh:
         if is_list:
             return [maTh.log(x, 2.718281828459045) for x in value if x > 0]
         return maTh.log(value, 2.718281828459045) if value > 0 else "Cannot compute natural logarithm of non-positive number"
+
+   @staticmethod
+    def abs(value):
+        """Calculate the absolute value of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x if x >= 0 else -x for x in value]
+        return value if value >= 0 else -value
+
+    @staticmethod
+    def cube(value):
+        """Calculate the cube of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x ** 3 for x in value]
+        return value ** 3
+
+    @staticmethod
+    def cb_root(value):
+        """Calculate the cube root of a number or each element in a list."""
+        is_list = type(value) == list
+        if is_list:
+            return [x ** (1/3) for x in value]
+        return value ** (1/3)
