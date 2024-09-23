@@ -547,3 +547,94 @@ class maTh:
                     return Logic.logical_nor(alpha, beta)
                 elif operation == 'Logical XOR':
                     return Logic.logical_xor(alpha, beta)
+
+    @staticmethod
+    def boolean_and(alpha, beta):
+        """Perform Boolean AND operation."""
+        return alpha and beta
+
+    @staticmethod
+    def boolean_or(alpha, beta):
+        """Perform Boolean OR operation."""
+        return alpha or beta
+
+    @staticmethod
+    def boolean_not(alpha):
+        """Perform Boolean NOT operation."""
+        return not alpha
+
+    @staticmethod
+    def boolean_nand(alpha, beta):
+        """Perform Boolean NAND operation."""
+        return not (alpha and beta)
+
+    @staticmethod
+    def boolean_nor(alpha, beta):
+        """Perform Boolean NOR operation."""
+        return not (alpha or beta)
+
+    @staticmethod
+    def boolean_xor(alpha, beta):
+        """Perform Boolean XOR operation."""
+        return (alpha and not beta) or (not alpha and beta)
+
+    @staticmethod
+    def compute(alpha, beta, operation=None):
+        """Compute Boolean operations based on the specified operation."""
+        is_list = type(alpha) == list and type(beta) == list
+        results = {}
+
+        if is_list:
+            for i in range(min(len(alpha), len(beta))):
+                if operation is None:  # Perform all operations
+                    results[i] = {
+                        'Boolean AND': boo.boolean_and(alpha[i], beta[i]),
+                        'Boolean OR': boo.boolean_or(alpha[i], beta[i]),
+                        'Boolean NOT Alpha': boo.boolean_not(alpha[i]),
+                        'Boolean NOT Beta': boo.boolean_not(beta[i]),
+                        'Boolean NAND': boo.boolean_nand(alpha[i], beta[i]),
+                        'Boolean NOR': boo.boolean_nor(alpha[i], beta[i]),
+                        'Boolean XOR': boo.boolean_xor(alpha[i], beta[i]),
+                    }
+                else:  # Perform the specified operation
+                    if operation == 'Boolean AND':
+                        results[i] = boo.boolean_and(alpha[i], beta[i])
+                    elif operation == 'Boolean OR':
+                        results[i] = boo.boolean_or(alpha[i], beta[i])
+                    elif operation == 'Boolean NOT Alpha':
+                        results[i] = boo.boolean_not(alpha[i])
+                    elif operation == 'Boolean NOT Beta':
+                        results[i] = boo.boolean_not(beta[i])
+                    elif operation == 'Boolean NAND':
+                        results[i] = boo.boolean_nand(alpha[i], beta[i])
+                    elif operation == 'Boolean NOR':
+                        results[i] = boo.boolean_nor(alpha[i], beta[i])
+                    elif operation == 'Boolean XOR':
+                        results[i] = boo.boolean_xor(alpha[i], beta[i])
+            return results
+        else:
+            if operation is None:
+                return {
+                    'Boolean AND': boo.boolean_and(alpha, beta),
+                    'Boolean OR': boo.boolean_or(alpha, beta),
+                    'Boolean NOT Alpha': boo.boolean_not(alpha),
+                    'Boolean NOT Beta': boo.boolean_not(beta),
+                    'Boolean NAND': boo.boolean_nand(alpha, beta),
+                    'Boolean NOR': boo.boolean_nor(alpha, beta),
+                    'Boolean XOR': boo.boolean_xor(alpha, beta),
+                }
+            else:
+                if operation == 'Boolean AND':
+                    return boo.boolean_and(alpha, beta)
+                elif operation == 'Boolean OR':
+                    return boo.boolean_or(alpha, beta)
+                elif operation == 'Boolean NOT Alpha':
+                    return boo.boolean_not(alpha)
+                elif operation == 'Boolean NOT Beta':
+                    return boo.boolean_not(beta)
+                elif operation == 'Boolean NAND':
+                    return boo.boolean_nand(alpha, beta)
+                elif operation == 'Boolean NOR':
+                    return boo.boolean_nor(alpha, beta)
+                elif operation == 'Boolean XOR':
+                    return boo.boolean_xor(alpha, beta)
