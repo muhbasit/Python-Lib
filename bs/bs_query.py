@@ -128,3 +128,53 @@ def wikipedia_query(queries):
     
     return results
 
+def send_to_chatgpt(prompt):
+    """Send the prompt to ChatGPT and return the response."""
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=1500,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+    return response.choices[0].text.strip()
+
+def elaborate_content(query, definition, headings, subheadings, formulas, summary):
+    """Process the extracted Wikipedia content and interact with ChatGPT."""
+    
+    # 1. Elaborate the definition to make it easier to understand
+    prompt = f"Elaborate the definition of {query} to make it easier to understand:\n{definition}"
+    definition_response = send_to_chatgpt(prompt)
+    
+    # 2. Elaborate on each heading and subheading
+    headings_response = {}
+    for heading, heading_text in headings.items():
+        prompt = f"Explain the heading '{heading}' in simple terms:\n{heading_text}"
+        headings_response[heading] = send_to_chatgpt(prompt)
+    
+    subheadings_response = {}
+    for subheading, subheading_text in subheadings.items():
+        prompt = f"Explain the subheading '{subheading}' in simple terms:\n{subheading_text}"
+        subheadings_response[subheading] = send_to_chatgpt(prompt)
+    # 3. Express and prove the formulas
+    formulas_response = {}
+    for formula in formulas:
+        prompt = f"Express and provide a proof for the following formula:\n{formula}"
+        formulas_response[formula] = send_to_chatgpt(prompt)
+    
+    # 4. Applications of the topic and formulas in various fields
+    prompt = f"Describe the applications of {query} in various fields with relevant mathematical equations."
+    applications_response = send_to_chatgpt(prompt)
+    
+    # 5. Properties, operations, and related materials
+    prompt = f"List the properties, operations, and any related materials for {query}."
+    properties_response = send_to_chatgpt(prompt)
+    return {
+        "elaborated_definition": definition_response,
+        "headings_explanation": headings_response,
+        "subheadings_explanation": subheadings_response,
+        "formulas_proof": formulas_response,
+        "applications": applications_response,
+        "properties_operations": properties_response
+    }
