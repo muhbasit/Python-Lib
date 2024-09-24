@@ -56,8 +56,3 @@ def google_query(queries):
     
     return results
 
-# Example usage
-queries = ["Your first topic here", "Your second topic here"]  # Replace with your desired search queries
-results = google_query(queries)
-print("Retrieved Data:")
-print(results)  # Returning the results as a list of lists
