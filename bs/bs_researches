@@ -1,0 +1,268 @@
+import requests
+from bs4 import BeautifulSoup
+from gtts import gTTS
+from moviepy.editor import TextClip, AudioFileClip, concatenate_videoclips
+from docx import Document
+from pptx import Presentation
+from fpdf import FPDF
+
+def google_search(query):
+    """Search Google for the given query and return titles and snippets."""
+    search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(search_url, headers=headers)
+
+    if response.status_code != 200:
+        return None
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    results = []
+    for g in soup.find_all('div', class_='BVG0Nb'):
+        title = g.find('h3').text if g.find('h3') else "No Title"
+        snippet = g.find('span', class_='aCOpRe').text if g.find('span', class_='aCOpRe') else ""
+        results.append((title, snippet))
+    
+    return results
+
+def search_wikipedia(query):
+    """Search Wikipedia for the given query and return the HTML content."""
+    search_url = f"https://en.wikipedia.org/wiki/{query.replace(' ', '_')}"
+    response = requests.get(search_url)
+
+    if response.status_code != 200:
+        return None
+    
+    return response.content
+
+def convert_to_latex(formula):
+    """Convert mathematical formula to LaTeX format."""
+    latex_formula = formula.replace('^', '**').replace('*', '\\cdot ').replace('=', '\\equiv ')
+    return f"${latex_formula}$"
+
+def extract_wikipedia_info(html_content):
+    """Extract definitions, headings, formulas, and summaries from the Wikipedia page."""
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # 1. Definition of topic (first paragraph)
+    definition = soup.find('p').text if soup.find('p') else "No definition found."
+
+    # 2. Definitions of all headings
+    headings_definitions = {}
+    for heading in soup.find_all(['h2', 'h3']):
+        heading_text = heading.text.strip()
+        next_para = heading.find_next_sibling()
+        if next_para and next_para.name == 'p':
+            headings_definitions[heading_text] = next_para.text.strip()
+
+    # 3. Definitions of all subheadings
+    subheadings_definitions = {}
+    for subheading in soup.find_all('h3'):
+        subheading_text = subheading.text.strip()
+        next_para = subheading.find_next_sibling()
+        if next_para and next_para.name == 'p':
+            subheadings_definitions[subheading_text] = next_para.text.strip()
+
+    # 4. List of all mathematical formulae on page and convert to LaTeX
+    formulas = []
+    for math in soup.find_all('math'):
+        raw_formula = math.text.strip()
+        latex_formula = convert_to_latex(raw_formula)
+        formulas.append(latex_formula)
+
+    # 5. Summary of all paragraphs (first 5 points)
+    paragraphs = soup.find_all('p')
+    summary = []
+    for para in paragraphs[:5]:  # Get first 5 paragraphs
+        summary.append(para.text.strip())
+    
+    return definition, headings_definitions, subheadings_definitions, formulas, summary
+
+def create_word_document(content, filename):
+    """Create a Word document from the content."""
+    doc = Document()
+    doc.add_heading('Wikipedia and Google Search Results', level=1)
+
+    for data in content:
+        query, definition, headings, subheadings, formulas, summary, google_results = data
+        doc.add_heading(query, level=2)
+        doc.add_paragraph(f"Definition: {definition}")
+
+        doc.add_heading("Headings:", level=3)
+        for heading, explanation in headings.items():
+            doc.add_paragraph(f"{heading}: {explanation}")
+        
+        doc.add_heading("Subheadings:", level=3)
+        for subheading, explanation in subheadings.items():
+            doc.add_paragraph(f"{subheading}: {explanation}")
+        
+        doc.add_heading("Formulas:", level=3)
+        for formula in formulas:
+            doc.add_paragraph(f"Formula (LaTeX): {formula}")
+
+        doc.add_heading("Summary:", level=3)
+        for point in summary:
+            doc.add_paragraph(point)
+
+        doc.add_heading("Google Search Results:", level=3)
+        for title, snippet in google_results:
+            doc.add_paragraph(f"{title}: {snippet}")
+
+    doc.save(filename)
+
+def create_ppt(content, filename):
+    """Create a PowerPoint presentation from the content."""
+    prs = Presentation()
+    
+    for data in content:
+        query, definition, headings, subheadings, formulas, summary, google_results = data
+        slide = prs.slides.add_slide(prs.slide_layouts[5])  # Empty slide
+
+        title = slide.shapes.title
+        title.text = query
+
+        content = f"Definition: {definition}\n\nHeadings:\n"
+        for heading, explanation in headings.items():
+            content += f"{heading}: {explanation}\n"
+        content += "\nSubheadings:\n"
+        for subheading, explanation in subheadings.items():
+            content += f"{subheading}: {explanation}\n"
+        content += "\nFormulas:\n"
+        for formula in formulas:
+            content += f"Formula (LaTeX): {formula}\n"
+        content += "\nSummary:\n"
+        for point in summary:
+            content += f"{point}\n"
+
+        content += "\nGoogle Search Results:\n"
+        for title, snippet in google_results:
+            content += f"{title}: {snippet}\n"
+
+        textbox = slide.shapes.add_textbox(left=0, top=0, width=prs.slide_width, height=prs.slide_height)
+        textbox.text = content
+
+    prs.save(filename)
+
+def create_pdf(content, filename):
+    """Create a PDF document from the content."""
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    for data in content:
+        query, definition, headings, subheadings, formulas, summary, google_results = data
+        pdf.cell(200, 10, txt=query, ln=True)
+        pdf.cell(200, 10, txt=f"Definition: {definition}", ln=True)
+
+        pdf.cell(200, 10, txt="Headings:", ln=True)
+        for heading, explanation in headings.items():
+            pdf.cell(200, 10, txt=f"{heading}: {explanation}", ln=True)
+
+        pdf.cell(200, 10, txt="Subheadings:", ln=True)
+        for subheading, explanation in subheadings.items():
+            pdf.cell(200, 10, txt=f"{subheading}: {explanation}", ln=True)
+
+        pdf.cell(200, 10, txt="Formulas:", ln=True)
+        for formula in formulas:
+            pdf.cell(200, 10, txt=f"Formula (LaTeX): {formula}", ln=True)
+
+        pdf.cell(200, 10, txt="Summary:", ln=True)
+        for point in summary:
+            pdf.cell(200, 10, txt=point, ln=True)
+
+        pdf.cell(200, 10, txt="Google Search Results:", ln=True)
+        for title, snippet in google_results:
+            pdf.cell(200, 10, txt=f"{title}: {snippet}", ln=True)
+
+    pdf.output(filename)
+
+def create_mp4_from_content(filename, content):
+    """Create an MP4 file from the extracted Wikipedia and Google content."""
+    combined_text = ""
+    clips = []
+
+    for data in content:
+        query, definition, headings, subheadings, formulas, summary, google_results = data
+        combined_text += f"Topic: {query}\n"
+        combined_text += f"Definition: {definition}\n\n"
+
+        combined_text += "Headings:\n"
+        for heading, explanation in headings.items():
+            combined_text += f"{heading}: {explanation}\n"
+        combined_text += "\n"
+
+        combined_text += "Subheadings:\n"
+        for subheading, explanation in subheadings.items():
+            combined_text += f"{subheading}: {explanation}\n"
+        combined_text += "\n"
+
+        combined_text += "Formulas:\n"
+        for formula in formulas:
+            combined_text += f"Formula (LaTeX): {formula}\n"
+        combined_text += "\n"
+
+        combined_text += "Summary:\n"
+        for point in summary:
+            combined_text += f"{point}\n"
+        combined_text += "\n"
+
+        combined_text += "Google Search Results:\n"
+        for title, snippet in google_results:
+            combined_text += f"{title}: {snippet}\n"
+        combined_text += "\n"
+
+    # Create MP3 file from combined text
+    tts = gTTS(text=combined_text, lang='en')
+    audio_filename = 'Wikipedia_Content.mp3'
+    tts.save(audio_filename)
+    
+    # Create video clips with text overlay
+    for line in combined_text.split('\n'):
+        if line.strip():  # Avoid empty lines
+            txt_clip = TextClip(line, fontsize=24, color='white', bg_color='black', size=(640, 480))
+            txt_clip = txt_clip.set_duration(3)  # Each text appears for 3 seconds
+            clips.append(txt_clip)
+
+    # Combine video clips
+    video = concatenate_videoclips(clips, method="compose")
+
+    # Add audio to the video
+    audio_clip = AudioFileClip(audio_filename)
+    video = video.set_audio(audio_clip)
+
+    # Write the final video to a file
+    video.write_videofile(filename, fps=24)
+
+def bs_search():
+    """Main function to get user input, search, and generate files."""
+    # 1. Get Data from User
+    query = input("Enter the topic to search: ")
+
+    # 2. Search on Google
+    google_results = google_search(query)
+
+    # 3. Include that search results to Wikipedia
+    html_content = search_wikipedia(query)
+    if html_content:
+        definition, headings, subheadings, formulas, summary = extract_wikipedia_info(html_content)
+
+        # Combine all data
+        content = [
+            (query, definition, headings, subheadings, formulas, summary, google_results)
+        ]
+
+        # 5. Create Word Document
+        create_word_document(content, 'Wikipedia_and_Google_Content.docx')
+
+        # 6. Create PowerPoint Presentation
+        create_ppt(content, 'Wikipedia_and_Google_Content.pptx')
+
+        # 7. Create PDF Document
+        create_pdf(content, 'Wikipedia_and_Google_Content.pdf')
+
+        # 8. Create MP4 File with Audio
+        create_mp4_from_content('Wikipedia_and_Google_Content.mp4', content)
+
+        print("Files created successfully!")
+    else:
+        print("Failed to retrieve data from Wikipedia.")
+
